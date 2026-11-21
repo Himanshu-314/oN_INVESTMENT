@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1F6F54">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="InvestPlan">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>My Investment Portfolio</title>
+<style>
+:root{--bg:#EEF1EC;--card:#FBFCFA;--ink:#17261F;--mute:#5C6B63;--line:#D5DBD3;--acc:#1F6F54;--L:#1F6F54;--M:#D79A2B;--S:#B5472F;--warn:#B5472F;--sug:#E3F1E8;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#101814;--card:#17221C;--ink:#E6EDE8;--mute:#93A39A;--line:#2A3A31;--acc:#5CC49A;--L:#5CC49A;--M:#E3AE4A;--S:#D9735C;--warn:#D9735C;--sug:#1B3326;color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:env(safe-area-inset-top) 0 calc(64px + env(safe-area-inset-bottom))}
+main{max-width:760px;margin:0 auto;padding:14px}
+h1{font:700 22px/1.2 Georgia,serif;margin:6px 0 12px}
+h2{font:700 16px/1.2 Georgia,serif;margin:0 0 8px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px}
+.tab{display:none}.tab.on{display:block}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav button{flex:1;border:0;background:none;color:var(--mute);padding:12px 4px;font:600 14px system-ui}
+nav button.on{color:var(--acc);box-shadow:inset 0 3px 0 var(--acc)}
+input,select,button{font:inherit;color:var(--ink)}
+input[type=number],input[type=text]{background:transparent;border:1px solid var(--line);border-radius:6px;padding:6px 8px;min-width:0}
+.big{font:700 26px Georgia,serif;width:100%;max-width:220px}
+.lab{color:var(--mute);font-size:12px;letter-spacing:.03em}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px}
+.stat b{display:block;font:700 22px Georgia,serif}
+.cat{border-top:2px solid var(--line);padding:10px 0}
+.cat:first-child{border-top:0}
+.h{display:grid;grid-template-columns:24px 1fr 70px 84px 30px;gap:6px;align-items:center}
+.f{display:grid;grid-template-columns:1fr 62px 78px 30px;gap:6px;align-items:center;margin:6px 0 0 14px}
+.sg{margin:6px 0 0 30px;padding:4px 8px;border-radius:6px;background:var(--sug);font-size:13px;display:flex;justify-content:space-between;gap:8px}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.sr{color:var(--mute);font-weight:700}
+.x{border:0;background:none;color:var(--mute);font-size:18px;padding:4px}
+.btn{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:8px 12px;cursor:pointer}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:var(--bg);font-weight:700}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;align-items:center}
+.tot{display:flex;justify-content:space-between;font-weight:700;border-top:2px solid var(--ink);padding-top:8px;margin-top:6px}
+.bad{color:var(--warn)}.ok{color:var(--acc)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:6px 3px;border-bottom:1px solid var(--line)}
+td.num,th.num{text-align:right}
+td input{width:62px;text-align:right}
+.bar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--line);margin:8px 0}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.meter{height:10px;border-radius:5px;background:linear-gradient(90deg,var(--L),var(--M),var(--S));position:relative;margin:12px 0 6px}
+.meter i{position:absolute;top:-4px;width:4px;height:18px;background:var(--ink);border-radius:2px}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid var(--line)}
+.tips{padding-left:18px;margin:8px 0 0}
+.set{display:grid;grid-template-columns:1fr 90px;gap:8px;align-items:center;margin:6px 0}
+.mix{display:grid;grid-template-columns:1fr 52px 52px 52px 52px;gap:5px;align-items:center;margin:6px 0;font-size:13px}
+.mix input{width:100%;text-align:right;padding:5px 4px}
+small{color:var(--mute)}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+<h1>My Investment Portfolio</h1>
+
+<section class="tab on" id="t-plan">
+  <div class="card">
+    <div class="lab">AMOUNT INVESTED (₹)</div>
+    <div style="display:flex;align-items:center;gap:6px"><b style="font-size:26px">₹</b><input class="big" type="number" id="amt" inputmode="decimal" min="0" step="500"></div>
+  </div>
+  <div class="stats">
+    <div class="stat"><span class="lab">TOTAL INVESTED</span><b id="sInv"></b></div>
+    <div class="stat"><span class="lab">EQUITY SHARE</span><b id="sEq"></b><small>Rest = gold / cash / foreign</small></div>
+    <div class="stat"><span class="lab">RISK SCORE (0–100)</span><b id="sScore"></b><small id="sLab"></small></div>
+    <div class="stat"><span class="lab">YEARLY SWING (EST.)</span><b id="sSwing"></b><small>Typical ups and downs</small></div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <h2>Where my money goes</h2>
+    <div class="h lab"><span>Sr</span><span>Category / Fund</span><span class="num">Invest %</span><span class="num">Amount</span><span></span></div>
+    <div id="cats"></div>
+    <div class="tot"><span>TOTAL</span><span id="tot"></span></div>
+    <div class="tot" style="border:0;margin-top:0;color:var(--mute);font-weight:400"><span>Suggested total</span><span id="stot"></span></div>
+    <div id="okmsg" style="margin-top:6px"></div>
+    <div class="row"><button class="btn" id="addCat">+ Add category</button><button class="btn" id="norm">Make total 100%</button></div>
+  </div>
+  <div class="card">
+    <h2>Cap mix (share of my equity)</h2>
+    <table id="capT"></table>
+    <div class="bar" id="capBar"></div>
+  </div>
+  <div class="card">
+    <h2>Risk</h2>
+    <div class="kv"><span>Risk score now</span><b id="r1"></b></div>
+    <div class="kv"><span>Risk profile now</span><b id="r2"></b></div>
+    <div class="kv"><span>Risk score after suggestion</span><b id="r3"></b></div>
+    <div class="kv"><span>Risk profile after suggestion</span><b id="r4"></b></div>
+    <div class="kv"><span>Bad-year loss now (1 in 20 years)</span><b id="r5"></b></div>
+    <div class="meter"><i id="pin"></i></div>
+  </div>
+</section>
+
+<section class="tab" id="t-sug">
+  <div class="card">
+    <h2>Suggested shares from cap targets</h2>
+    <small>Set your target cap mix. Suggestions move only unlocked categories, in steps, to get closest to your targets.</small>
+    <table style="margin-top:8px"><tr class="lab"><th>Cap</th><th class="num">Now</th><th class="num">My target</th><th class="num">After</th></tr>
+    <tr><td>Large</td><td class="num" id="n0"></td><td class="num"><input type="number" id="tL" step="1" min="0" max="100"></td><td class="num" id="a0"></td></tr>
+    <tr><td>Mid</td><td class="num" id="n1"></td><td class="num"><input type="number" id="tM" step="1" min="0" max="100"></td><td class="num" id="a1"></td></tr>
+    <tr><td>Small</td><td class="num" id="n2"></td><td class="num"><input type="number" id="tS" step="1" min="0" max="100"></td><td class="num" id="a2"></td></tr>
+    <tr><td><b>Total</b></td><td class="num"></td><td class="num"><b id="tT"></b></td><td class="num"></td></tr></table>
+    <div class="set"><label for="step">Suggestion step (%)</label><input type="number" id="step" min="1" max="25" step="1"></div>
+    <div class="set"><label for="tol">“On target” within (pts)</label><input type="number" id="tol" min="0" step="0.5"></div>
+    <h2 style="margin-top:12px">Categories the suggestion may change</h2>
+    <div id="locks"></div>
+    <div id="sugOut"></div>
+    <div class="row"><button class="btn pri" id="apply">Apply suggestion</button></div>
+  </div>
+  <div class="card"><h2>Health check</h2><ul class="tips" id="tips"></ul></div>
+</section>
+
+<section class="tab" id="t-set">
+  <div class="card">
+    <h2>Risk knobs</h2>
+    <small>Yearly swing assumed for each bucket. They drive the risk score and bad-year loss.</small>
+    <div class="set"><label for="vL">Large cap swing %</label><input type="number" id="vL" step="0.1"></div>
+    <div class="set"><label for="vM">Mid cap swing %</label><input type="number" id="vM" step="0.1"></div>
+    <div class="set"><label for="vS">Small cap swing %</label><input type="number" id="vS" step="0.1"></div>
+    <div class="set"><label for="vN">Cash / foreign swing %</label><input type="number" id="vN" step="0.1"></div>
+    <div class="set"><label for="vG">Gold swing %</label><input type="number" id="vG" step="0.1"></div>
+    <div class="set"><label for="div">Swing that equals score 100 (%)</label><input type="number" id="div" step="1"></div>
+    <div class="set"><label for="z">Bad-year multiplier (1 in 20)</label><input type="number" id="z" step="0.05"></div>
+  </div>
+  <div class="card">
+    <h2>Fund assumptions</h2>
+    <small>Equity % is the part held in domestic stocks. The rest is cash / foreign. Large, Mid and Small split that equity part. Refresh these from factsheets now and then.</small>
+    <div id="mix"></div>
+  </div>
+  <div class="card">
+    <div class="row" style="margin:0"><button class="btn" id="exp">Export backup</button><button class="btn" id="imp">Import backup</button><button class="btn" id="reset">Reset to sheet values</button></div>
+    <input type="file" id="file" accept="application/json" hidden>
+    <p><small>Educational tool only, not investment advice. Data stays on this device.</small></p>
+  </div>
+</section>
+</main>
+<nav><button class="on" data-tab="plan">Plan</button><button data-tab="sug">Suggest</button><button data-tab="set">Settings</button></nav>
+
+<script>
+var DEF={amount:25000,target:{L:65,M:16,S:19},step:5,tol:2.5,div:25,z:1.65,
+vol:{L:11.8047,M:14.5896,S:22.5105,N:6.3495,G:10},cats:[
+{name:"Flexi Cap Mutual Fund",pct:40,free:false,funds:[
+ {name:"Parag Parikh Flexi Cap Fund",split:30,t:"eq",e:62,L:77.94,M:9.87,S:12.19},
+ {name:"HDFC Flexi Cap Fund",split:70,t:"eq",e:95,L:71.77,M:15.55,S:12.68}]},
+{name:"Multi Cap Mutual Fund",pct:30,free:true,funds:[
+ {name:"Nippon India Multi Cap Fund",split:55,t:"eq",e:98,L:44.97,M:28.6,S:26.43},
+ {name:"Mahindra Manulife Multi Cap Fund",split:45,t:"eq",e:97,L:45.36,M:28.87,S:25.77}]},
+{name:"Nifty 50 Index Fund",pct:20,free:false,funds:[
+ {name:"UTI Nifty 50 Index Fund",split:100,t:"eq",e:99.5,L:99.33,M:0.16,S:0.51}]},
+{name:"Gold ETF",pct:5,free:false,funds:[
+ {name:"Nippon India ETF Gold BeES",split:100,t:"gold",e:0,L:0,M:0,S:0}]},
+{name:"Small Cap Fund",pct:5,free:true,funds:[
+ {name:"Mahindra Manulife Small Cap Fund",split:100,t:"eq",e:96,L:17.32,M:17.93,S:64.75}]}]};
+var KEY="investplan-v2",S,sug=null;
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function load(){try{var r=localStorage.getItem(KEY);if(r){var o=JSON.parse(r);if(o&&o.cats&&o.target)return o}}catch(e){}return clone(DEF)}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function $(i){return document.getElementById(i)}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;")}
+var fmt=new Intl.NumberFormat("en-IN",{maximumFractionDigits:0});
+function rs(n){return "₹"+fmt.format(Math.round(n))}
+function sum(a){return a.reduce(function(x,y){return x+y},0)}
+
+// pct: array of category percentages. Returns cap amounts, swing, equity share etc.
+function evalPlan(pct,A){
+  var cap=[0,0,0],wv=0,tot=0,eq=0;
+  S.cats.forEach(function(c,ci){
+    var ca=A*pct[ci]/100;
+    c.funds.forEach(function(f){
+      var a=ca*f.split/100;tot+=a;
+      if(f.t==="gold"){wv+=a*S.vol.G;return}
+      var e=f.e/100,s=(f.L+f.M+f.S)||1,l=f.L/s,m=f.M/s,sm=f.S/s;
+      cap[0]+=a*e*l;cap[1]+=a*e*m;cap[2]+=a*e*sm;eq+=a*e;
+      wv+=a*(e*(l*S.vol.L+m*S.vol.M+sm*S.vol.S)+(1-e)*S.vol.N);
+    });
+  });
+  var ce=sum(cap)||1,sw=tot?wv/tot:0;
+  return {capAmt:cap,capPct:cap.map(function(x){return x/ce*100}),swing:sw,score:Math.min(100,sw/S.div*100),eqShare:tot?eq/tot*100:0,tot:tot};
+}
+function band(sc){return sc<35?"🟢 Conservative":sc<55?"🟡 Balanced Growth":sc<75?"🟠 Growth":sc<90?"🔴 Aggressive":"🔴 Very Aggressive"}
+function profile(r){return band(r.score)+" | ±"+r.swing.toFixed(1)+"%/yr"}
+
+function build(){
+  var h="";
+  S.cats.forEach(function(c,ci){
+    h+='<div class="cat"><div class="h"><span class="sr">'+(ci+1)+'</span>'+
+      '<input type="text" data-k="cn" data-c="'+ci+'" value="'+esc(c.name)+'" aria-label="Category name">'+
+      '<input type="number" class="num" data-k="cp" data-c="'+ci+'" value="'+c.pct+'" min="0" max="100" step="1" inputmode="decimal" aria-label="Invest percent">'+
+      '<span class="num" id="ca'+ci+'"></span><button class="x" data-k="dc" data-c="'+ci+'" aria-label="Delete category">×</button></div>'+
+      '<div class="sg"><span>Suggested</span><span id="sp'+ci+'"></span></div>';
+    c.funds.forEach(function(f,fi){
+      h+='<div class="f"><input type="text" data-k="fn" data-c="'+ci+'" data-f="'+fi+'" value="'+esc(f.name)+'" aria-label="Fund name">'+
+        '<input type="number" class="num" data-k="fs" data-c="'+ci+'" data-f="'+fi+'" value="'+f.split+'" min="0" max="100" step="1" inputmode="decimal" aria-label="Split percent">'+
+        '<span class="num" id="fa'+ci+'_'+fi+'"></span><button class="x" data-k="df" data-c="'+ci+'" data-f="'+fi+'" aria-label="Delete fund">×</button></div>';
+    });
+    h+='<div class="row" style="margin-left:14px"><button class="btn" data-k="af" data-c="'+ci+'">+ Fund</button><span id="cw'+ci+'" class="bad" style="font-size:13px"></span></div></div>';
+  });
+  $("cats").innerHTML=h;
+  var m='<div class="mix lab"><span></span><span class="num">Equity</span><span class="num">Large</span><span class="num">Mid</span><span class="num">Small</span></div>';
+  S.cats.forEach(function(c,ci){c.funds.forEach(function(f,fi){
+    var a='data-c="'+ci+'" data-f="'+fi+'"';
+    m+='<div class="mix"><span>'+esc(f.name)+'</span>'+(f.t==="gold"?'<small style="grid-column:span 4">gold, no cap mix</small>':
+      ["e","L","M","S"].map(function(k){return '<input type="number" data-k="mx" data-m="'+k+'" '+a+' value="'+f[k]+'" step="0.01" aria-label="'+k+'">'}).join(""))+'</div>';
+  })});
+  $("mix").innerHTML=m;
+  var lk="";
+  S.cats.forEach(function(c,ci){lk+='<label style="display:flex;gap:8px;margin:6px 0"><input type="checkbox" data-k="free" data-c="'+ci+'"'+(c.free?" checked":"")+'> '+esc(c.name)+'</label>'});
+  $("locks").innerHTML=lk;
+  ["L","M","S","N","G"].forEach(function(k){$("v"+k).value=S.vol[k]});
+  $("div").value=S.div;$("z").value=S.z;$("amt").value=S.amount;
+  $("tL").value=S.target.L;$("tM").value=S.target.M;$("tS").value=S.target.S;$("step").value=S.step;$("tol").value=S.tol;
+}
+
+function suggest(){
+  var n=S.cats.length,cur=S.cats.map(function(c){return c.pct}),freeIdx=[],fixed=0;
+  S.cats.forEach(function(c,i){if(c.free)freeIdx.push(i);else fixed+=c.pct});
+  var pool=100-fixed,st=Math.max(1,S.step||5),T=[S.target.L,S.target.M,S.target.S];
+  var best=null,p=cur.slice();
+  function err(q){var r=evalPlan(q,100).capPct;return (r[0]-T[0])*(r[0]-T[0])+(r[1]-T[1])*(r[1]-T[1])+(r[2]-T[2])*(r[2]-T[2])}
+  function rec(k,left){
+    if(k===freeIdx.length-1){
+      if(left<0)return;p[freeIdx[k]]=left;
+      var e=err(p),mv=0;freeIdx.forEach(function(i){mv+=Math.abs(p[i]-cur[i])});
+      if(!best||e<best.e-1e-9||(Math.abs(e-best.e)<=1e-9&&mv<best.mv))best={e:e,mv:mv,p:p.slice()};return}
+    for(var v=0;v<=left;v+=st){p[freeIdx[k]]=v;rec(k+1,left-v)}
+  }
+  if(freeIdx.length===0||pool<0||freeIdx.length>7)best={p:cur.slice()};
+  else if(freeIdx.length===1)best={p:(function(){var q=cur.slice();q[freeIdx[0]]=pool;return q})()};
+  else{
+    // keep any remainder (when pool is not a multiple of step) on the last free category
+    rec(0,pool);
+    if(!best)best={p:cur.slice()};
+  }
+  sug={p:best.p};
+}
+
+function calc(){
+  var A=S.amount,pct=S.cats.map(function(c){return c.pct}),tot=sum(pct);
+  var now=evalPlan(pct,A),aft=evalPlan(sug.p,A),T=[S.target.L,S.target.M,S.target.S];
+  S.cats.forEach(function(c,ci){
+    var ca=A*c.pct/100;$("ca"+ci).textContent=rs(ca);
+    var changed=sug.p[ci]!==c.pct;
+    $("sp"+ci).innerHTML='<b>'+sug.p[ci]+'%</b> · '+rs(A*sug.p[ci]/100)+(changed?' <span class="ok">('+(sug.p[ci]>c.pct?"+":"")+(sug.p[ci]-c.pct)+')</span>':'');
+    var st=sum(c.funds.map(function(f){return f.split}));
+    $("cw"+ci).textContent=st===100?"":"Split total "+st+", should be 100";
+    c.funds.forEach(function(f,fi){$("fa"+ci+"_"+fi).textContent=rs(ca*f.split/100)});
+  });
+  $("tot").innerHTML='<span class="'+(tot===100?"":"bad")+'">'+tot+'%</span> &nbsp; '+rs(A*tot/100);
+  $("stot").textContent=sum(sug.p)+"% · "+rs(A*sum(sug.p)/100);
+  var bad=tot!==100||S.cats.some(function(c){return sum(c.funds.map(function(f){return f.split}))!==100});
+  $("okmsg").innerHTML=bad?'<span class="bad">⚠️ Percentages do not add up to 100%</span>':'<span class="ok">✅ All percentages add up to 100%</span>';
+  $("sInv").textContent=rs(A);$("sEq").textContent=Math.round(now.eqShare)+"%";
+  $("sScore").textContent=now.score.toFixed(1);$("sLab").textContent=profile(now);$("sSwing").textContent="±"+now.swing.toFixed(1)+"%";
+  var names=["Large Cap","Mid Cap","Small Cap"],cl=["L","M","S"];
+  var t='<tr class="lab"><th>Cap</th><th class="num">Now</th><th class="num">Target</th><th class="num">After</th><th>Status</th></tr>',bar="";
+  for(var i=0;i<3;i++){
+    var ok=Math.abs(now.capPct[i]-T[i])<=S.tol;
+    t+='<tr><td><span class="dot" style="background:var(--'+cl[i]+')"></span>'+names[i]+'</td><td class="num">'+now.capPct[i].toFixed(1)+'%</td><td class="num">'+T[i]+'%</td><td class="num">'+aft.capPct[i].toFixed(1)+'%</td><td>'+(ok?"✅ On target":"⚠️ Off by "+Math.abs(now.capPct[i]-T[i]).toFixed(1))+'</td></tr>';
+    bar+='<div style="width:'+now.capPct[i]+'%;background:var(--'+cl[i]+')"></div>';
+    $("n"+i).textContent=now.capPct[i].toFixed(1)+"%";$("a"+i).textContent=aft.capPct[i].toFixed(1)+"%";
+  }
+  t+='<tr><td><b>TOTAL</b></td><td class="num">'+sum(now.capPct).toFixed(1)+'%</td><td class="num">'+sum(T)+'%</td><td class="num">'+sum(aft.capPct).toFixed(1)+'%</td><td></td></tr>';
+  $("capT").innerHTML=t;$("capBar").innerHTML=bar;$("tT").textContent=sum(T)+"%";$("tT").className=sum(T)===100?"":"bad";
+  $("r1").textContent=now.score.toFixed(1);$("r2").textContent=profile(now);
+  $("r3").textContent=aft.score.toFixed(1);$("r4").textContent=profile(aft);
+  var loss=S.z*now.swing;$("r5").textContent=Math.round(loss)+"% ≈ "+rs(A*loss/100);
+  $("pin").style.left="calc("+now.score+"% - 2px)";
+  var o='<table style="margin-top:10px"><tr class="lab"><th>Category</th><th class="num">Now</th><th class="num">Suggested</th><th class="num">Amount</th></tr>';
+  S.cats.forEach(function(c,i){o+='<tr><td>'+esc(c.name)+(c.free?"":' <small>(fixed)</small>')+'</td><td class="num">'+c.pct+'%</td><td class="num"><b>'+sug.p[i]+'%</b></td><td class="num">'+rs(A*sug.p[i]/100)+'</td></tr>'});
+  $("sugOut").innerHTML=o+'</table><p>Risk score after: <b>'+aft.score.toFixed(1)+'</b> | '+profile(aft)+'</p>';
+  tips(tot,now);
+  save();
+}
+
+function tips(tot,now){
+  var t=[],pS=now.capPct[2],pL=now.capPct[0],gold=0;
+  S.cats.forEach(function(c){c.funds.forEach(function(f){if(f.t==="gold")gold+=S.amount*c.pct/100*f.split/100})});
+  var pG=S.amount?gold/S.amount*100:0;
+  if(tot!==100)t.push("Category percentages total "+tot+". Use “Make total 100%”.");
+  if(sum([S.target.L,S.target.M,S.target.S])!==100)t.push("Your cap targets add up to "+sum([S.target.L,S.target.M,S.target.S])+", not 100.");
+  if(pS>25)t.push("Small caps are "+pS.toFixed(0)+"% of equity. Over 25% can mean deep drawdowns.");
+  if(pL<50)t.push("Large caps are only "+pL.toFixed(0)+"% of equity, a thin stable core.");
+  if(pG<5)t.push("Gold is "+pG.toFixed(1)+"% of the plan. Many planners hold 5 to 15%.");
+  if(pG>15)t.push("Gold is "+pG.toFixed(1)+"%. Over 15% can drag long-term growth.");
+  S.cats.forEach(function(c){if(c.pct>45)t.push(c.name+" holds "+c.pct+"%. Consider spreading it out.")});
+  if(!t.length)t.push("No issues found. The plan looks balanced against your settings.");
+  $("tips").innerHTML=t.map(function(x){return "<li>"+x+"</li>"}).join("");
+}
+
+function refresh(){suggest();calc()}
+document.addEventListener("input",function(e){
+  var t=e.target,d=t.dataset;
+  if(t.id==="amt")S.amount=Math.max(0,+t.value||0);
+  else if(t.id==="tL"||t.id==="tM"||t.id==="tS")S.target[t.id[1]]=+t.value||0;
+  else if(t.id==="step")S.step=Math.max(1,+t.value||5);
+  else if(t.id==="tol")S.tol=Math.max(0,+t.value||0);
+  else if(/^v[LMSNG]$/.test(t.id))S.vol[t.id[1]]=+t.value||0;
+  else if(t.id==="div")S.div=Math.max(1,+t.value||25);
+  else if(t.id==="z")S.z=Math.max(0,+t.value||1.65);
+  else if(d.k==="cn"){S.cats[d.c].name=t.value;return save()}
+  else if(d.k==="cp")S.cats[d.c].pct=Math.max(0,+t.value||0);
+  else if(d.k==="fn"){S.cats[d.c].funds[d.f].name=t.value;return save()}
+  else if(d.k==="fs")S.cats[d.c].funds[d.f].split=Math.max(0,+t.value||0);
+  else if(d.k==="mx")S.cats[d.c].funds[d.f][d.m]=Math.max(0,+t.value||0);
+  else if(d.k==="free")S.cats[d.c].free=t.checked;
+  else return;
+  refresh();
+});
+document.addEventListener("click",function(e){
+  var t=e.target.closest("button");if(!t)return;
+  var d=t.dataset;
+  if(d.tab){
+    document.querySelectorAll("nav button").forEach(function(b){b.classList.toggle("on",b===t)});
+    document.querySelectorAll(".tab").forEach(function(s){s.classList.toggle("on",s.id==="t-"+d.tab)});
+    window.scrollTo(0,0);return}
+  if(d.k==="dc"){if(S.cats.length>1&&confirm("Delete this category?")){S.cats.splice(d.c,1);build();refresh()}return}
+  if(d.k==="df"){var fs=S.cats[d.c].funds;if(fs.length>1){fs.splice(d.f,1);build();refresh()}return}
+  if(d.k==="af"){S.cats[d.c].funds.push({name:"New fund",split:0,t:"eq",e:100,L:100,M:0,S:0});build();refresh();return}
+  if(t.id==="addCat"){S.cats.push({name:"New category",pct:0,free:false,funds:[{name:"New fund",split:100,t:"eq",e:100,L:100,M:0,S:0}]});build();refresh()}
+  else if(t.id==="norm"){
+    var tot=sum(S.cats.map(function(c){return c.pct}))||1,run=0;
+    S.cats.forEach(function(c,i){if(i<S.cats.length-1){c.pct=Math.round(c.pct/tot*100);run+=c.pct}else c.pct=100-run});build();refresh()}
+  else if(t.id==="apply"){S.cats.forEach(function(c,i){c.pct=sug.p[i]});build();refresh();document.querySelector('nav [data-tab="plan"]').click()}
+  else if(t.id==="reset"){if(confirm("Reset everything to your sheet values?")){S=clone(DEF);build();refresh()}}
+  else if(t.id==="exp"){var a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify(S,null,2)],{type:"application/json"}));a.download="investment-plan.json";a.click()}
+  else if(t.id==="imp")$("file").click();
+});
+$("file").addEventListener("change",function(e){
+  var f=e.target.files[0];if(!f)return;var r=new FileReader();
+  r.onload=function(){try{var o=JSON.parse(r.result);if(o.cats&&o.vol&&o.target){S=o;build();refresh()}else alert("Not a valid backup file")}catch(x){alert("Could not read that file")}};
+  r.readAsText(f);
+});
+
+S=load();build();refresh();
+if("serviceWorker" in navigator&&location.protocol!=="file:"){navigator.serviceWorker.register("sw.js").catch(function(){})}
+</script>
+</body>
+</html>
